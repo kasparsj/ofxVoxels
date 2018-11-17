@@ -1,2 +1,1 @@
-# ofxVoxels
-a voxel world in openframeworks
+# under development
