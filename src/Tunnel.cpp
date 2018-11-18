@@ -5,14 +5,18 @@ using namespace ofxVoxels;
 int Tunnel::numInstances = 0;
 
 void Tunnel::transform() {
-    this->registration = pReg.get();
-    this->nodeSize = glm::vec3(pNodeSize.get());
-    this->nodeSpacing = glm::vec3(pNodeSpacing.get());
-    this->nodeDisplacement = pNodeDisplacement.get();
+    lReg = pReg.get();
+    lNodeSize = pNodeSize.get();
+    lNodeSpacing = pNodeSpacing.get();
+    lNodeDisplacement = pNodeDisplacement.get();
     updateDims();
     int boxesXY = (numNodes.x+numNodes.y) * 2;
     for (int z=0; z<numNodes.z; z++) {
         for (int xy=0; xy<boxesXY; xy++) {
+            curZ = z;
+            glm::vec3 nodeSize = lNodeSize.value();
+            glm::vec3 nodeSpacing = lNodeSpacing.value();
+            glm::vec3 nodeDisplacement = lNodeDisplacement.value();
             int i = (z * boxesXY) + xy;
             const shared_ptr<Node> &box = nodes[i];
             float boxX;
@@ -45,7 +49,7 @@ void Tunnel::transform() {
                     boxY = -tan(theta)*ry;
                 }
             }
-            box->setPosition(origin + glm::vec3(boxX, boxY, (numNodes.z/2 - z) * (nodeSize.z + nodeSpacing.z)));
+            box->setPosition(origin + glm::vec3(boxX, boxY, (numNodes.z/2 - z) * (nodeSize.z + nodeSpacing.z)) + nodeDisplacement);
             box->setScale(nodeSize);
         }
     }

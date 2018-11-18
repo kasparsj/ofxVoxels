@@ -1,11 +1,12 @@
 #include "GuiGroup.hpp"
 #include "Strings.hpp"
-#include "ofxVecInputField.hpp"
 #include "ofxDropdown.h"
 #include "Animations.hpp"
 #include "Object.hpp"
+#include "ColorWheelSchemes.h"
 
 using namespace ofxVoxels;
+using namespace ofxColorTheory;
 
 GuiGroup::GuiGroup(const ofParameterGroup & parameters, const std::string& _filename, float x, float y) {
     minimized = false;
@@ -30,97 +31,97 @@ GuiGroup * GuiGroup::setup(const ofParameterGroup & _parameters, const std::stri
     
     for(std::size_t i = 0; i < _parameters.size(); i++){
         string name = _parameters.getName(i);
-        if (name == Strings::POSITION) {
-            auto p = _parameters.get<glm::vec3>(i);
-            add(new ofxVec3InputField(p, b.width));
-        }
-        else if (name == Strings::NODE_DISPLACEMENT) {
-            auto p = _parameters.get<float>(i);
-            add(new ofxFloatField(p, b.width));
-        }
-        else if (name == Strings::ANIMATION || name == Strings::NODE_ANIM) {
+        if (name == Strings::ANIMATION || name == Strings::NODE_ANIM) {
             auto p = _parameters.get<int>(i);
-            add(new ofxIntDropdown(p, Animations::LABELS, b.width));
+            ofxGuiGroup::add(new ofxIntDropdown(p, Animations::LABELS, b.width));
         }
         else if (name == Strings::REGISTRATION || name == Strings::PARENT_SIDE) {
             auto p = _parameters.get<int>(i);
-            add(new ofxIntDropdown(p, Object::REG_POINTS, b.width));
+            ofxGuiGroup::add(new ofxIntDropdown(p, Object::REG_POINTS, b.width));
         }
-        else if (name == Strings::NODES) {
-            auto p = _parameters.get<glm::vec4>(i);
-            add(new ofxVec4InputField(p, b.width));
+        else if (name == Strings::NODE_COLOR_SCHEME) {
+            auto p = _parameters.get<int>(i);
+            ofxGuiGroup::add(new ofxIntDropdown(p, ColorWheelSchemes::NAMES, b.width));
+        }
+        else if (name == Strings::NODE_SIZE || name == Strings::NODE_SPACING || name == Strings::NODE_DISPLACEMENT) {
+            const ofxVecExpr<glm::vec3>& p = static_cast<const ofxVecExpr<glm::vec3>& >(_parameters.get(i));
+            add(p);
+        }
+        else if (false) {
+//            auto p = dynamic_cast<const ofxExpr<float>&>(_parameters.get<float>(i));
+//            add(p);
         }
         else {
             string type = _parameters.getType(i);
             if(type == typeid(ofParameter <int32_t> ).name()){
                 auto p = _parameters.get<int>(i);
-                add(new ofxIntField(p, b.width));
+                ofxGuiGroup::add(p);
             }else if(type == typeid(ofParameter <uint32_t> ).name()){
                 auto p = _parameters.get<int>(i);
-                add(new ofxIntField(p, b.width));
+                ofxGuiGroup::add(p);
             }else if(type == typeid(ofParameter <int64_t> ).name()){
                 auto p = _parameters.get<int>(i);
-                add(new ofxIntField(p, b.width));
+                ofxGuiGroup::add(p);
             }else if(type == typeid(ofParameter <uint64_t> ).name()){
                 auto p = _parameters.get<int>(i);
-                add(new ofxIntField(p, b.width));
+                ofxGuiGroup::add(p);
             }else if(type == typeid(ofParameter <int8_t> ).name()){
                 auto p = _parameters.get<int>(i);
-                add(new ofxIntField(p, b.width));
+                ofxGuiGroup::add(p);
             }else if(type == typeid(ofParameter <uint8_t> ).name()){
                 auto p = _parameters.get<int>(i);
-                add(new ofxIntField(p, b.width));
+                ofxGuiGroup::add(p);
             }else if(type == typeid(ofParameter <int16_t> ).name()){
                 auto p = _parameters.get<int>(i);
-                add(new ofxIntField(p, b.width));
+                ofxGuiGroup::add(p);
             }else if(type == typeid(ofParameter <uint16_t> ).name()){
                 auto p = _parameters.get<int>(i);
-                add(new ofxIntField(p, b.width));
+                ofxGuiGroup::add(p);
             }else if(type == typeid(ofParameter <size_t> ).name()){
                 auto p = _parameters.get<size_t>(i);
-                add(p);
+                ofxGuiGroup::add(p);
             }else if(type == typeid(ofParameter <float> ).name()){
                 auto p = _parameters.getFloat(i);
-                add(p);
+                ofxGuiGroup::add(p);
             }else if(type == typeid(ofParameter <double> ).name()){
                 auto p = _parameters.get<double>(i);
-                add(p);
+                ofxGuiGroup::add(p);
             }else if(type == typeid(ofParameter <bool> ).name()){
                 auto p = _parameters.getBool(i);
-                add(p);
+                ofxGuiGroup::add(p);
             }else if(type == typeid(ofParameter <void> ).name()){
                 auto p = _parameters.getVoid(i);
-                add(p);
+                ofxGuiGroup::add(p);
             }else if(type == typeid(ofParameter <ofDefaultVec2> ).name()){
                 auto p = _parameters.getVec2f(i);
-                add(p);
+                ofxGuiGroup::add(p);
             }else if(type == typeid(ofParameter <ofDefaultVec3> ).name()){
                 auto p = _parameters.getVec3f(i);
-                add(p);
+                ofxGuiGroup::add(p);
             }else if(type == typeid(ofParameter <ofDefaultVec4> ).name()){
                 auto p = _parameters.getVec4f(i);
-                add(p);
+                ofxGuiGroup::add(p);
             }else if(type == typeid(ofParameter <ofColor> ).name()){
                 auto p = _parameters.getColor(i);
-                add(p);
+                ofxGuiGroup::add(p);
             }else if(type == typeid(ofParameter <ofShortColor> ).name()){
                 auto p = _parameters.getShortColor(i);
-                add(p);
+                ofxGuiGroup::add(p);
             }else if(type == typeid(ofParameter <ofFloatColor> ).name()){
                 auto p = _parameters.getFloatColor(i);
-                add(p);
+                ofxGuiGroup::add(p);
             }else if(_parameters[i].valueType() == typeid(string).name()){
                 if(_parameters[i].isReadOnly()){
                     auto p = _parameters.get(i).castReadOnly<std::string, void>();
-                    add(p);
+                    ofxGuiGroup::add(p);
                 }else{
                     auto p = _parameters.getString(i);
-                    add(p);
+                    ofxGuiGroup::add(p);
                 }
             }else if(type == typeid(ofParameterGroup).name()){
                 auto p = _parameters.getGroup(i);
                 ofxGuiGroup * panel = new ofxGuiGroup(p);
-                add(panel);
+                ofxGuiGroup::add(panel);
             }else{
                 ofLogWarning() << "ofxBaseGroup; no control for parameter of type " << type;
             }

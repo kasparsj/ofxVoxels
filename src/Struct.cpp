@@ -1,4 +1,6 @@
 #include "Struct.hpp"
+#include "Strings.hpp"
+#include "Utils.hpp"
 
 using namespace ofxVoxels;
 
@@ -16,8 +18,8 @@ void Struct::resize(const vec4 &numNodes) {
 
 void Struct::setupParameterGroup() {
     Object::setupParameterGroup();
-    pGroup.add(pColor.set("NodeColor", ofColor::magenta));
-    pGroup.add(pColorScheme.set("NodeColorScheme", 0, 0, (ColorWheelSchemes::colorSchemes.size() - 1)));
+    pGroup.add(pColor.set(Strings::NODE_COLOR, ofColor::magenta));
+    pGroup.add(pColorScheme.set(Strings::NODE_COLOR_SCHEME, 0, 0, (ColorWheelSchemes::SCHEMES.size() - 1)));
     pGroup.add(pNumColors.set("NumNodeColors", 256, 1, 1000));
     pGroup.add(pNoise.set("NodeNoiseMult", 0.1, 0.001, 0.2));
     pGroup.add(pNoiseAnim.set("NodeNoiseAnim", 0.1, 0, 0.5));
@@ -26,7 +28,7 @@ void Struct::setupParameterGroup() {
 void Struct::setColors(const vector<ofColor> & colors) {
     for (int i=0; i<nodes.size(); i++) {
         const shared_ptr<Node> &box = nodes[i];
-        float n = noise(box->getPosition() / (nodeSize + nodeSpacing));
+        float n = noise(box->getPosition() / (lNodeSize.value() + lNodeSpacing.value()));
         box->setColor(colors[n * colors.size()]);
     }
 }
@@ -72,7 +74,7 @@ void Struct::updateColors() {
     noiseOffset += noiseAnimOffset * pNoiseAnim.get();
     vector<ofColor> colors;
     if (pNumColors.get() > 1) {
-        scheme = ColorWheelSchemes::colorSchemes[pColorScheme.get()];
+        scheme = ColorWheelSchemes::SCHEMES[pColorScheme.get()];
         scheme->setPrimaryColor(pColor.get());
         colors = scheme->interpolate(pNumColors.get());
     }
@@ -83,8 +85,8 @@ void Struct::updateColors() {
 }
 
 void Struct::updateDims() {
-    const glm::vec3 nodes = (glm::vec3(numNodes) * nodeSize);
-    const glm::vec3 spaces = (glm::vec3(numNodes) - vec3(1.f)) * nodeSpacing;
+    const glm::vec3 nodes = (glm::vec3(numNodes) * lNodeSize.value());
+    const glm::vec3 spaces = (glm::vec3(numNodes) - vec3(1.f)) * lNodeSpacing.value();
     dims = (nodes + spaces);
     origin = (Object::REG[(int) pReg.get()] * dims);
     int l = (int) Registration::BACK;
@@ -111,7 +113,7 @@ void Struct::randomize() {
     pNoiseAnim.setRandom();
     pNodeSize.setRandom();
     pNodeSpacing.setRandom();
-    if (pNodeDisplacement.get() > 0) {
+    if (pNodeDisplacement.is_set()) {
         pNodeDisplacement.setRandom();
     }
 }

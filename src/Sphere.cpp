@@ -5,14 +5,18 @@ using namespace ofxVoxels;
 int Sphere::numInstances = 0;
 
 void Sphere::transform() {
-    this->registration = pReg.get();
-    this->nodeSize = glm::vec3(pNodeSize.get());
-    this->nodeSpacing = glm::vec3(pNodeSpacing.get());
-    this->nodeDisplacement = pNodeDisplacement.get();
+    lReg = pReg.get();
+    lNodeSize = pNodeSize.get();
+    lNodeSpacing = pNodeSpacing.get();
+    lNodeDisplacement = pNodeDisplacement.get();
     updateDims();
     for (int x=0; x<numNodes.x; x++) {
         for (int y=0; y<numNodes.y; y++) {
             for (int z=0; z<numNodes.z; z++) {
+                curX = x; curY = y; curZ = z;
+                glm::vec3 nodeSize = lNodeSize.value();
+                glm::vec3 nodeSpacing = lNodeSpacing.value();
+                glm::vec3 nodeDisplacement = lNodeDisplacement.value();
                 int i = index(x, y, z);
                 const shared_ptr<Node> &box = nodes[i];
                 float theta = x * (TWO_PI / numNodes.x);

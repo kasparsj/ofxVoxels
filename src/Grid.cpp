@@ -6,20 +6,24 @@ using namespace std;
 int Grid::numInstances = 0;
 
 void Grid::transform() {
-    this->registration = pReg.get();
-    this->nodeSize = glm::vec3(pNodeSize.get());
-    this->nodeSpacing = glm::vec3(pNodeSpacing.get());
-    this->nodeDisplacement = pNodeDisplacement.get();
+    lReg = pReg.get();
+    lNodeSize = pNodeSize;
+    lNodeSpacing = pNodeSpacing;
+    lNodeDisplacement = pNodeDisplacement;
     updateDims();
     for (int x=0; x<numNodes.x; x++) {
         for (int y=0; y<numNodes.y; y++) {
             for (int z=0; z<numNodes.z; z++) {
+                curX = x; curY = y; curZ = z;
+                glm::vec3 nodeSize = lNodeSize.value();
+                glm::vec3 nodeSpacing = lNodeSpacing.value();
+                glm::vec3 nodeDisplacement = lNodeDisplacement.value();
                 int i = index(x, y, z);
                 const shared_ptr<Node> &box = nodes[i];
                 float nodeX = ((-numNodes.x+1)/2.f + x) * (nodeSize.x + nodeSpacing.x);
                 float nodeY = ((numNodes.y-1)/2.f - y) * (nodeSize.y + nodeSpacing.y);
                 float nodeZ = ((numNodes.z-1)/2.f - z) * (nodeSize.z + nodeSpacing.z);
-                box->setPosition(origin + glm::vec3(nodeX, nodeY, nodeZ) + randomDisplacement());
+                box->setPosition(origin + glm::vec3(nodeX, nodeY, nodeZ) + nodeDisplacement);
                 box->setScale(nodeSize);
             }
         }

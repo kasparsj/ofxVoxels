@@ -13,6 +13,15 @@ namespace ofxVoxels {
     class Struct : public Container {
         
     public:
+        Struct() {
+            ofxVecExpr<glm::vec3>* lNodeProps[3] = {&lNodeSize, &lNodeSpacing, &lNodeDisplacement};
+            for (int i=0; i<3; i++) {
+                lNodeProps[i]->add_var("x", curX);
+                lNodeProps[i]->add_var("y", curY);
+                lNodeProps[i]->add_var("z", curZ);
+                lNodeProps[i]->add_var("t", curTime);
+            }
+        }
         virtual void resize(const vec4 &numNodes);
         virtual void setupParameterGroup();
         virtual void transform() = 0;
@@ -44,10 +53,10 @@ namespace ofxVoxels {
             return noise(xyz.x, xyz.y, xyz.z);
         }
         virtual bool isTransformDirty() {
-            return pReg.get() != registration ||
-                   pNodeSize.get() != nodeSize.x ||
-                   pNodeSpacing.get() != nodeSpacing.x ||
-                   pNodeDisplacement.get() != nodeDisplacement;
+            return pReg.get() != lReg ||
+                   pNodeSize.get() != lNodeSize ||
+                   pNodeSpacing.get() != lNodeSpacing ||
+                   pNodeDisplacement.get() != lNodeDisplacement;
         }
         virtual void updateDims();
         virtual const glm::mat4 getChildMatrix(const Container *child) const {
@@ -66,12 +75,12 @@ namespace ofxVoxels {
     protected:
         void updateColors();
 
-        int registration;
+        int lReg;
         vector<glm::mat4> sidesMatrix;
         glm::ivec4 numNodes;
-        glm::vec3 nodeSize;
-        glm::vec3 nodeSpacing;
-        float nodeDisplacement;
+        ofxVecExpr<glm::vec3> lNodeSize;
+        ofxVecExpr<glm::vec3> lNodeSpacing;
+        ofxVecExpr<glm::vec3> lNodeDisplacement;
         float noiseMult = 0;
         glm::vec3 noiseOffset;
         glm::vec3 noiseAnimOffset;
@@ -81,6 +90,8 @@ namespace ofxVoxels {
         ofParameter<int> pNumColors;
         ofParameter<float> pNoise;
         ofParameter<float> pNoiseAnim;
+        
+        float curX, curY, curZ, curTime;
         
     };
     

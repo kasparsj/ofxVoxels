@@ -18,6 +18,8 @@ namespace ofxVoxels {
         static const string NODE_SPACING;
         static const string NODE_DISPLACEMENT;
         static const string NODE_ANIM;
+        static const string NODE_COLOR;
+        static const string NODE_COLOR_SCHEME;
         
     };
     

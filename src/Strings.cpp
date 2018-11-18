@@ -11,3 +11,5 @@ const string Strings::NODE_SIZE = "NodeSize";
 const string Strings::NODE_SPACING = "NodeSpacing";
 const string Strings::NODE_DISPLACEMENT = "NodeDisplacement";
 const string Strings::NODE_ANIM = "NodeAnim";
+const string Strings::NODE_COLOR = "NodeColor";
+const string Strings::NODE_COLOR_SCHEME = "NodeColorScheme";

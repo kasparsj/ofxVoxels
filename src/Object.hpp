@@ -2,6 +2,8 @@
 
 #include "Node.hpp"
 #include "GuiGroup.hpp"
+#include "ofxExpr.hpp"
+#include "ofxVecExpr.hpp"
 
 using namespace std;
 
@@ -105,27 +107,23 @@ namespace ofxVoxels {
         void setNodeAnimation(Animation value) {
             pNodeAnim.set((int)value);
         }
-        int getNodeSize() const {
+        const glm::vec3 & getNodeSize() const {
             return pNodeSize.get();
         }
-        void setNodeSize(int value) {
+        void setNodeSize(const glm::vec3 & value) {
             pNodeSize.set(value);
         }
-        int getNodeSpacing() const {
+        const glm::vec3 & getNodeSpacing() const {
             return pNodeSpacing.get();
         }
-        void setNodeSpacing(int value) {
+        void setNodeSpacing(const glm::vec3 &value) {
             pNodeSpacing.set(value);
         }
-        float getNodeDisplacement() const {
+        const glm::vec3 & getNodeDisplacement() const {
             return pNodeDisplacement.get();
         }
-        void setNodeDisplacement(float value) {
+        void setNodeDisplacement(const glm::vec3 &value) {
             pNodeDisplacement.set(value);
-        }
-        glm::vec3 randomDisplacement() const {
-            float inp = pNodeDisplacement.get();
-            return glm::vec3(inp/2.f - ofRandom(inp), inp/2.f - ofRandom(inp), inp/2.f - ofRandom(inp));
         }
         ofParameterGroup & getParameterGroup() {
             if (pGroup.size() == 0) {
@@ -153,9 +151,9 @@ namespace ofxVoxels {
         ofParameterGroup pGroup;
         ofParameter<glm::vec4> pNumNodes;
         ofParameter<int> pNodeAnim;
-        ofParameter<int> pNodeSize;
-        ofParameter<int> pNodeSpacing;
-        ofParameter<float> pNodeDisplacement;
+        ofxVecExpr<glm::vec3> pNodeSize;
+        ofxVecExpr<glm::vec3> pNodeSpacing;
+        ofxVecExpr<glm::vec3> pNodeDisplacement;
         
     };
     
