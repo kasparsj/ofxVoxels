@@ -1,24 +1,24 @@
 #include "Tunnel.hpp"
 
-using namespace ofxVoxels;
+using namespace vxls;
 
 int Tunnel::numInstances = 0;
 
 void Tunnel::transform() {
     lReg = pReg.get();
-    lNodeSize = pNodeSize.get();
-    lNodeSpacing = pNodeSpacing.get();
-    lNodeDisplacement = pNodeDisplacement.get();
+    lNodeSize = pNodeSize;
+    lNodeSpacing = pNodeSpacing;
+    lNodeDisplacement = pNodeDisplacement;
     updateDims();
     int boxesXY = (numNodes.x+numNodes.y) * 2;
     for (int z=0; z<numNodes.z; z++) {
         for (int xy=0; xy<boxesXY; xy++) {
             curZ = z;
-            glm::vec3 nodeSize = lNodeSize.value();
-            glm::vec3 nodeSpacing = lNodeSpacing.value();
-            glm::vec3 nodeDisplacement = lNodeDisplacement.value();
+            glm::vec3 nodeSize = lNodeSize.get();
+            glm::vec3 nodeSpacing = lNodeSpacing.get();
+            glm::vec3 nodeDisplacement = lNodeDisplacement.isExplicit() ? ofRandom(lNodeDisplacement.get()) : lNodeDisplacement.get();
             int i = (z * boxesXY) + xy;
-            const shared_ptr<Node> &box = nodes[i];
+            const std::shared_ptr<Node> &box = nodes[i];
             float boxX;
             float boxY;
             float theta = xy * (TWO_PI / boxesXY);
@@ -57,6 +57,6 @@ void Tunnel::transform() {
 
 void Tunnel::setupParameterGroup() {
     Struct::setupParameterGroup();
-    pNumNodes.set("Nodes", ivec4(12, 12, 50, 1), ivec4(1), ivec4(24, 24, 100, 1));
+    pNumNodes.set("Nodes", glm::vec4(12, 12, 50, 1), glm::vec4(1), glm::vec4(24, 24, 100, 1));
     pGroup.add(pCircular.set("Circular", false));
 }

@@ -1,11 +1,11 @@
 #include "Object.hpp"
 #include "Strings.hpp"
 
-using namespace ofxVoxels;
+using namespace vxls;
 
-const map<int,string> Object::REG_POINTS = createRegPoints();
-const vector<glm::vec3> Object::REG = createReg();
-const vector<glm::mat4> Object::ROT = createRot();
+const std::map<int,std::string> Object::REG_POINTS = createRegPoints();
+const std::vector<glm::vec3> Object::REG = createReg();
+const std::vector<glm::mat4> Object::ROT = createRot();
 
 void Object::setupParameterGroup() {
     pGroup.add(pPos.set(Strings::POSITION, glm::vec3(0)).setSliderMinMax(glm::vec3(-10000), glm::vec3(10000)));
@@ -27,7 +27,7 @@ void Object::clear() {
 void Object::update(const glm::mat4 &mat) {
     Node::update(mat);
     for (int i=0; i<nodes.size(); i++) {
-        const shared_ptr<Node> &node = nodes[i];
+        const std::shared_ptr<Node> &node = nodes[i];
         node->setAnimation((Animation)pNodeAnim.get());
         node->update(mat * localTransformMatrix);
         matrices[i] = mat * localTransformMatrix * node->getLocalTransformMatrix();

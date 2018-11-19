@@ -1,3 +1,5 @@
+#pragma once
+
 #include "Stage.hpp"
 #include "Animations.hpp"
 #include "Plane.hpp"

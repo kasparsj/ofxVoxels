@@ -3,10 +3,10 @@
 #include "Animations.hpp"
 #include "ofMath.h"
 #include "ofMatrix4x4.h"
+#include "ofColor.h"
+#include "ofParameter.h"
 
-namespace ofxVoxels {
-    
-    using namespace std;
+namespace vxls {
     
     class Node {
         
@@ -62,8 +62,8 @@ namespace ofxVoxels {
             setColor(ofFloatColor(ofRandom(1.f), ofRandom(1.f), ofRandom(1.f)));
         }
         virtual void update(const glm::mat4 &mat);
-        virtual const vector<ofMatrix4x4> & getMatrices() { }
-        virtual const vector<ofFloatColor> & getColors() { }
+        virtual const std::vector<ofMatrix4x4> & getMatrices() { }
+        virtual const std::vector<ofFloatColor> & getColors() { }
         
     protected:
         ofParameter<glm::vec3> pPos;

@@ -4,7 +4,7 @@
 #include "ofVboMesh.h"
 #include "ofTexture.h"
 
-namespace ofxVoxels {
+namespace vxls {
     
     using namespace std;
 

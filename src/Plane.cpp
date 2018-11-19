@@ -1,7 +1,7 @@
 #include "Plane.hpp"
 #include "ofMain.h"
 
-using namespace ofxVoxels;
+using namespace vxls;
 
 int Plane::numInstances = 0;
 
@@ -15,9 +15,9 @@ void Plane::transform() {
     for (int x=0; x<numNodes.x; x++) {
         for (int y=0; y<numNodes.y; y++) {
             curX = x; curY = y;
-            glm::vec3 nodeSize = lNodeSize.value();
-            glm::vec3 nodeSpacing = lNodeSpacing.value();
-            glm::vec3 nodeDisplacement = lNodeDisplacement.value();
+            glm::vec3 nodeSize = lNodeSize.get();
+            glm::vec3 nodeSpacing = lNodeSpacing.get();
+            glm::vec3 nodeDisplacement = lNodeDisplacement.isExplicit() ? ofRandom(lNodeDisplacement.get()) : lNodeDisplacement.get();
             int i = index(x, y, 0);
             const shared_ptr<Node> &box = nodes[i];
             float nodeX = (-numNodes.x/2 + x) * (nodeSize.x + nodeSpacing.x);
@@ -30,7 +30,7 @@ void Plane::transform() {
 
 void Plane::setupParameterGroup() {
     Struct::setupParameterGroup();
-    pNumNodes.set("Nodes", ivec4(1), ivec4(1), ivec4(50, 50, 1, 1));
+    pNumNodes.set("Nodes", glm::vec4(1), glm::vec4(1), glm::vec4(50, 50, 1, 1));
     pColor.set("NodeColor", ofColor::white);
     pNumColors.set("NumNodeColors", 1, 1, 1000);
     pNodeSize.set("NodeSize", glm::vec3(5000), glm::vec3(1), glm::vec3(10000));

@@ -2,9 +2,9 @@
 #include "ofMain.h"
 #include "ofxEasing.h"
 
-using namespace ofxVoxels;
+using namespace vxls;
 
-const map<int, string> Animations::LABELS = createLabels();
+const std::map<int, std::string> Animations::LABELS = createLabels();
 float Animations::duration = 5.f;
 
 void Animations::rotate(glm::quat & orientation, glm::vec3 &rotationSpeed) {

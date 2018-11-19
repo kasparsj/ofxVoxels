@@ -6,10 +6,8 @@
 #include "ofxExprInputField.hpp"
 #include "ofxVecExprInputField.hpp"
 
-namespace ofxVoxels {
+namespace vxls {
     
-    using namespace std;
-
     class GuiGroup : public ofxGuiGroup {
         
     public:
@@ -17,14 +15,18 @@ namespace ofxVoxels {
         GuiGroup(const ofParameterGroup & parameters, const std::string& _filename = "settings.xml", float x = 10, float y = 10);
         GuiGroup * setup(const ofParameterGroup & parameters, const std::string& filename = "settings.xml", float x = 10, float y = 10);
         
-        template<class Type>
-        void add(const ofxExpr<Type> &parameter) {
-            ofxGuiGroup::add(new ofxExprInputField<Type>(parameter, b.width));
+        using ofxGuiGroup::add;
+        void add(const ofxExpr &parameter) {
+            add(new ofxExprInputField(parameter, b.width));
         }
-        
-        template<class Type>
-        void add(const ofxVecExpr<Type> &parameter) {
-            ofxGuiGroup::add(new ofxVecExprInputField<Type>(parameter, b.width));
+        void add(const ofxVecExpr<glm::vec2> &parameter) {
+            add(new ofxVecExprInputField<glm::vec2>(parameter, b.width));
+        }
+        void add(const ofxVecExpr<glm::vec3> &parameter) {
+            add(new ofxVecExprInputField<glm::vec3>(parameter, b.width));
+        }
+        void add(const ofxVecExpr<glm::vec4> &parameter) {
+            add(new ofxVecExprInputField<glm::vec4>(parameter, b.width));
         }
         
     };

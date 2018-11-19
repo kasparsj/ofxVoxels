@@ -1,6 +1,7 @@
 #include "Node.hpp"
+#include "ofVectorMath.h"
 
-using namespace ofxVoxels;
+using namespace vxls;
 
 void Node::update(const glm::mat4 &mat) {
     switch ((Animation)pAnim.get()) {

@@ -1,7 +1,6 @@
 #include "Grid.hpp"
 
-using namespace ofxVoxels;
-using namespace std;
+using namespace vxls;
 
 int Grid::numInstances = 0;
 
@@ -15,9 +14,9 @@ void Grid::transform() {
         for (int y=0; y<numNodes.y; y++) {
             for (int z=0; z<numNodes.z; z++) {
                 curX = x; curY = y; curZ = z;
-                glm::vec3 nodeSize = lNodeSize.value();
-                glm::vec3 nodeSpacing = lNodeSpacing.value();
-                glm::vec3 nodeDisplacement = lNodeDisplacement.value();
+                glm::vec3 nodeSize = lNodeSize.get();
+                glm::vec3 nodeSpacing = lNodeSpacing.get();
+                glm::vec3 nodeDisplacement = lNodeDisplacement.isExplicit() ? ofRandom(lNodeDisplacement.get()) : lNodeDisplacement.get();
                 int i = index(x, y, z);
                 const shared_ptr<Node> &box = nodes[i];
                 float nodeX = ((-numNodes.x+1)/2.f + x) * (nodeSize.x + nodeSpacing.x);

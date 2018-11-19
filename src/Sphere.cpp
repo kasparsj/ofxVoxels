@@ -1,24 +1,24 @@
 #include "Sphere.hpp"
 
-using namespace ofxVoxels;
+using namespace vxls;
 
 int Sphere::numInstances = 0;
 
 void Sphere::transform() {
     lReg = pReg.get();
-    lNodeSize = pNodeSize.get();
-    lNodeSpacing = pNodeSpacing.get();
-    lNodeDisplacement = pNodeDisplacement.get();
+    lNodeSize = pNodeSize;
+    lNodeSpacing = pNodeSpacing;
+    lNodeDisplacement = pNodeDisplacement;
     updateDims();
     for (int x=0; x<numNodes.x; x++) {
         for (int y=0; y<numNodes.y; y++) {
             for (int z=0; z<numNodes.z; z++) {
                 curX = x; curY = y; curZ = z;
-                glm::vec3 nodeSize = lNodeSize.value();
-                glm::vec3 nodeSpacing = lNodeSpacing.value();
-                glm::vec3 nodeDisplacement = lNodeDisplacement.value();
+                glm::vec3 nodeSize = lNodeSize.get();
+                glm::vec3 nodeSpacing = lNodeSpacing.get();
+                glm::vec3 nodeDisplacement = lNodeDisplacement.isExplicit() ? ofRandom(lNodeDisplacement.get()) : lNodeDisplacement.get();
                 int i = index(x, y, z);
-                const shared_ptr<Node> &box = nodes[i];
+                const std::shared_ptr<Node> &box = nodes[i];
                 float theta = x * (TWO_PI / numNodes.x);
                 float phi = z * (TWO_PI / numNodes.z);
                 float rx = (((numNodes.x-1)/2.f) * (nodeSize.x + nodeSpacing.x));

@@ -5,7 +5,7 @@
 
 using namespace std;
 
-namespace ofxVoxels {
+namespace vxls {
     
     class Grid : public Struct {
         

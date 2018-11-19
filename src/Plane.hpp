@@ -2,12 +2,12 @@
 
 #include "Struct.hpp"
 
-namespace ofxVoxels {
+namespace vxls {
     
     class Plane : public Struct {
         
     public:
-        virtual string getName() {
+        virtual std::string getName() {
             if (pGroup.getName() == "") {
                 numInstances++;
                 pGroup.setName("Plane " + ofToString(numInstances));

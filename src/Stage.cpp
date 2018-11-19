@@ -1,9 +1,7 @@
 #include "Stage.hpp"
 #include "ofMatrix4x4.h"
 
-using namespace ofxVoxels;
-using namespace std;
-using namespace glm;
+using namespace vxls;
 
 int Stage::numInstances = 0;
 
