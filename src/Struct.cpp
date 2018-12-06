@@ -16,6 +16,62 @@ void Struct::resize() {
     }
 }
 
+void Struct::transform() {
+    lReg = pReg.get();
+    lNodeSize = pNodeSize;
+    lNodeSpacing = pNodeSpacing;
+    lNodeDisplacement = pNodeDisplacement;
+    
+    explicitNodeDisplacement.clear();
+    const int count = countNodes();
+    explicitNodeDisplacement.resize(count);
+    if (lNodeDisplacement.isExplicit()) {
+        for (int i=0; i<count; i++) {
+            explicitNodeDisplacement[i] = ofRandom(lNodeDisplacement.getExplicit());
+        }
+    }
+    
+    updateDims();
+    animate();
+}
+
+void Struct::animate() {
+    const int count = countNodes();
+    for (int i=0; i<count; i++) {
+        setCurrentNode(i);
+        updateCurrentNode();
+    }
+}
+
+void Struct::setCurrentNode(const int index)  {
+    currentNode = nodes[index];
+    const glm::ivec3 &idx3 = unpack(index);
+    const glm::vec3 posNorm = posNormal(idx3);
+    curIdx = index;
+    posX = posNorm.x;
+    posY = posNorm.y;
+    posZ = posNorm.z;
+}
+
+void Struct::updateCurrentNode() {
+    currentNode->setPosition(getNodePosition());
+    currentNode->setScale(getNodeScale());
+}
+
+const glm::vec3 Struct::getNodePosition() const {
+    const glm::vec3 &nodeSpacing = lNodeSpacing.get();
+    const glm::vec3 &nodeDisplacement = explicitNodeDisplacement[curIdx] + lNodeDisplacement.getNonExplicit();
+    const glm::vec3 &nodeSize = lNodeSize.get();
+    float nodeX = posX * (nodeSize.x + nodeSpacing.x);
+    float nodeY = posY * (nodeSize.y + nodeSpacing.y);
+    float nodeZ = posZ * (nodeSize.z + nodeSpacing.z);
+    return origin + glm::vec3(nodeX, nodeY, nodeZ) + nodeDisplacement;
+}
+
+const glm::vec3 Struct::getNodeScale() const {
+    return lNodeSize.get();
+}
+
 void Struct::setupParameterGroup() {
     Object::setupParameterGroup();
     pGroup.add(pColor.set(Strings::NODE_COLOR, ofColor::magenta));
@@ -27,10 +83,8 @@ void Struct::setupParameterGroup() {
 
 void Struct::setColors(const std::vector<ofColor> & colors) {
     for (int i=0; i<nodes.size(); i++) {
-        const std::shared_ptr<Node> &box = nodes[i];
-        // todo: it was nicer when divided by (size + spacing)
-        float n = noise(box->getPosition());
-        box->setColor(colors[n * colors.size()]);
+        float n = noise(posNormal(unpack(i)));
+        nodes[i]->setColor(colors[n * colors.size()]);
     }
 }
 
@@ -49,16 +103,25 @@ void Struct::update(const glm::mat4 &mat) {
 
 void Struct::updateFromParams() {
     if (pGroup.size() > 0) {
+        if (lPos != pPos) {
+            lPos = pPos;
+            pos = lPos.get();
+        }
+        else if (lPos.hasExprSymbol("t")) {
+            pos = lPos.get();
+        }
         if (lNumNodes != pNumNodes) {
             resize();
             transform();
             initRotation();
-            
             updateColors();
         }
         else {
             if (isTransformDirty()) {
                 transform();
+            }
+            else if (isTransformAnim()) {
+                animate();
             }
             updateColors();
         }

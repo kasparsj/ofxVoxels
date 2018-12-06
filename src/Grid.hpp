@@ -17,7 +17,6 @@ namespace vxls {
             }
             return pGroup.getName();
         }
-        virtual void transform();
         void write(int res, int z, vector<ofColor> & colors);
         void shiftColor(int x, int y);
         

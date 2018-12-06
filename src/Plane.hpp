@@ -14,7 +14,6 @@ namespace vxls {
             }
             return pGroup.getName();
         }
-        virtual void transform();
         virtual void setupParameterGroup();
                 
     private:

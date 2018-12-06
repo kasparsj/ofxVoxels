@@ -13,10 +13,10 @@ namespace vxls {
     public:
         
         const glm::vec3 & getPosition() {
-            return pPos.get();
+            return pos;
         }
         void setPosition(const glm::vec3 &value) {
-            pPos.set(value);
+            pos = value;
         }
         const glm::quat &getOrientation() {
             return orientation;
@@ -66,7 +66,7 @@ namespace vxls {
         virtual const std::vector<ofFloatColor> & getColors() { }
         
     protected:
-        ofParameter<glm::vec3> pPos;
+        glm::vec3 pos;
         glm::quat orientation;
         glm::vec3 scale = glm::vec3(1.f);
         glm::mat4 localTransformMatrix;

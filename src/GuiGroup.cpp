@@ -29,7 +29,7 @@ GuiGroup * GuiGroup::setup(const ofParameterGroup & _parameters, const std::stri
     bGuiActive = false;
     
     for(std::size_t i = 0; i < _parameters.size(); i++){
-        string name = _parameters.getName(i);
+        std::string name = _parameters.getName(i);
         if (name == Strings::ANIMATION || name == Strings::NODE_ANIM) {
             auto p = _parameters.get<int>(i);
             add(new ofxIntDropdown(p, Animations::LABELS, b.width));
@@ -43,7 +43,7 @@ GuiGroup * GuiGroup::setup(const ofParameterGroup & _parameters, const std::stri
             add(new ofxIntDropdown(p, ofxColorTheory::ColorWheelSchemes::NAMES, b.width));
         }
         else {
-            string type = _parameters.getType(i);
+            std::string type = _parameters.getType(i);
             if (type == typeid(ofxVecExpr <glm::vec3> ).name()) {
                 const ofxVecExpr<glm::vec3>& p = static_cast<const ofxVecExpr<glm::vec3>& >(_parameters.get(i));
                 add(p);
@@ -113,7 +113,7 @@ GuiGroup * GuiGroup::setup(const ofParameterGroup & _parameters, const std::stri
             }else if(type == typeid(ofParameter <ofFloatColor> ).name()){
                 auto p = _parameters.getFloatColor(i);
                 add(p);
-            }else if(_parameters[i].valueType() == typeid(string).name()){
+            }else if(_parameters[i].valueType() == typeid(std::string).name()){
                 if(_parameters[i].isReadOnly()){
                     auto p = _parameters.get(i).castReadOnly<std::string, void>();
                     add(p);

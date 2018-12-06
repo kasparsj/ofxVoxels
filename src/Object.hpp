@@ -1,9 +1,9 @@
 #pragma once
 
 #include "Node.hpp"
-#include "GuiGroup.hpp"
 #include "ofxExpr.hpp"
 #include "ofxVecExpr.hpp"
+#include "GuiGroup.hpp"
 
 namespace vxls {
     
@@ -81,6 +81,9 @@ namespace vxls {
             return nodes.size();
         }
 
+        void setPosition(const glm::vec3 &value) {
+            pPos.set(value);
+        }
         const Registration getRegistration() const {
             return (Registration) pReg.get();
         }
@@ -138,6 +141,7 @@ namespace vxls {
         virtual void setupParameterGroup();
         
     protected:
+        ofxVecExpr<glm::vec3> pPos;
         std::vector<std::shared_ptr<Node>> nodes;
         std::vector<ofMatrix4x4> matrices;
         std::vector<ofFloatColor> colors;

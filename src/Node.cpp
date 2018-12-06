@@ -1,5 +1,6 @@
 #include "Node.hpp"
-#include "ofVectorMath.h"
+#include "glm/gtc/matrix_transform.hpp"
+#include "glm/gtx/quaternion.hpp"
 
 using namespace vxls;
 
@@ -12,7 +13,7 @@ void Node::update(const glm::mat4 &mat) {
             Animations::threesixty(orientation, rotationSpeed, rotation);
             break;
     }
-    localTransformMatrix = glm::translate(glm::mat4(1.0), toGlm(pPos.get()));
+    localTransformMatrix = glm::translate(glm::mat4(1.0), pos);
     localTransformMatrix = localTransformMatrix * glm::toMat4((const glm::quat&)orientation);
-    localTransformMatrix = glm::scale(localTransformMatrix, toGlm(scale));
+    localTransformMatrix = glm::scale(localTransformMatrix, scale);
 }
