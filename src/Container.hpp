@@ -1,10 +1,10 @@
 #pragma once
 
-#include "Object.hpp"
+#include "VoxelGroup.hpp"
 
 namespace vxls {
     
-    class Container : public Object {
+    class Container : public VoxelGroup {
         
     public:
         virtual std::string getName() = 0;
@@ -12,7 +12,7 @@ namespace vxls {
         template<class T>
         const std::shared_ptr<T> addChild(Registration side, Registration reg) {
             const std::shared_ptr<T> child = addChild<T>(reg);
-            child->setSide(side);
+            child->getSideParam().set((int)side);
             return child;
         }
         
@@ -20,7 +20,7 @@ namespace vxls {
         const std::shared_ptr<T> addChild(Registration reg) {
             std::shared_ptr<T> child(new T);
             child->setParent(this);
-            child->setRegistration(reg);
+            child->getRegistrationParam().set((int)reg);
             children.push_back(child);
             return child;
         }
@@ -52,6 +52,7 @@ namespace vxls {
             parent = value;
         }
 
+        virtual void randomize() { }
         virtual void clear();
         virtual void update(const glm::mat4 &mat);
         

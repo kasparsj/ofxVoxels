@@ -5,7 +5,7 @@ using namespace vxls;
 int Cross::numInstances = 0;
 
 void Cross::setupParameterGroup() {
-    Struct::setupParameterGroup();
+    Symbol::setupParameterGroup();
     pNumNodes.set("Nodes", glm::vec4(3, 3, 3, 1), glm::vec4(1), glm::vec4(12));
     pColor.set("NodeColor", ofColor::white);
     pNumColors.set("NumNodeColors", 1, 1, 1000);

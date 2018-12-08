@@ -3,7 +3,7 @@
 using namespace vxls;
 
 void Container::clear() {
-    Object::clear();
+    VoxelGroup::clear();
     children.clear();
 }
 
@@ -12,12 +12,12 @@ void Container::update(const glm::mat4 &mat) {
         Node::update(mat);
         matrices.clear();
         colors.clear();
-        for (int i=0; i<nodes.size(); i++) {
-            const std::shared_ptr<Node> &node = nodes[i];
-            node->setAnimation((Animation)pNodeAnim.get());
-            node->update(mat * localTransformMatrix);
-            matrices.push_back(mat * localTransformMatrix * node->getLocalTransformMatrix());
-            colors.push_back(node->getColor());
+        for (int i=0; i<voxels.size(); i++) {
+            const std::shared_ptr<Voxel> &voxel = voxels[i];
+            updateVoxel(i);
+            voxel->update(mat * localTransformMatrix);
+            matrices.push_back(mat * localTransformMatrix * voxel->getLocalTransformMatrix());
+            colors.push_back(voxel->getColor());
         }
         for (int i=0; i<children.size(); i++) {
             const std::shared_ptr<Container> &child = children[i];
@@ -30,6 +30,6 @@ void Container::update(const glm::mat4 &mat) {
         }
     }
     else {
-        Object::update(mat);
+        VoxelGroup::update(mat);
     }
 }

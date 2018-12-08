@@ -1,15 +1,15 @@
 #pragma once
 
-#include "Node.hpp"
-#include "ofxExpr.hpp"
-#include "ofxVecExpr.hpp"
-#include "GuiGroup.hpp"
+#include "BaseObject.hpp"
+#include "HasGui.hpp"
+#include "HasColor.hpp"
+#include "Voxel.hpp"
 
 namespace vxls {
     
     enum class Registration { CENTER = 0, TOP = 1, BOTTOM = 2, LEFT = 3, RIGHT = 4, FRONT = 5, BACK = 6 };
     
-    class Object : public Node {
+    class VoxelGroup : public BaseObject, public HasGui, public HasColor {
         
     public:
         static const std::map<int,std::string> REG_POINTS;
@@ -50,6 +50,7 @@ namespace vxls {
         static const std::vector<glm::mat4> ROT;
         
         virtual void update(const glm::mat4& mat);
+        virtual void updateVoxel(const int i);
         const std::vector<ofMatrix4x4> & getMatrices() {
             return matrices;
         }
@@ -58,104 +59,72 @@ namespace vxls {
         }
         virtual void clear();
         
-        void resizeNodes(int size) {
-            if (size < nodes.size()) {
+        void resizeVoxels(int size) {
+            if (size < voxels.size()) {
                 clear();
             }
-            for (int i=nodes.size(); i<size; i++) {
-                addNode();
+            for (int i=voxels.size(); i<size; i++) {
+                addVoxel();
             }
         }
         
-        const std::shared_ptr<Node> &addNode() {
-            std::shared_ptr<Node> node(new Node);
-            nodes.push_back(node);
-            return nodes[nodes.size()-1];
+        const std::shared_ptr<Voxel> &addVoxel() {
+            std::shared_ptr<Voxel> voxel(new Voxel);
+            voxels.push_back(voxel);
+            return voxels[voxels.size()-1];
         }
         
-        const std::shared_ptr<Node> &getNode(int index) {
-            return nodes[index];
+        const std::shared_ptr<Voxel> &getVoxel(int index) {
+            return voxels[index];
         }
         
-        int countNodes() {
-            return nodes.size();
+        virtual int countVoxels() const {
+            return voxels.size();
         }
 
-        void setPosition(const glm::vec3 &value) {
-            pPos.set(value);
-        }
         const Registration getRegistration() const {
             return (Registration) pReg.get();
-        }
-        void setRegistration(Registration value) {
-            pReg.set((int)value);
         }
         const Registration getSide() const {
             return (Registration) pSide.get();
         }
-        void setSide(Registration value) {
-            pSide.set((int) value);
+        ofParameter<int> & getRegistrationParam() {
+            return pReg;
         }
-        const Animation getNodeAnimation() const {
-            return (Animation) pNodeAnim.get();
+        ofParameter<int> & getSideParam() {
+            return pSide;
         }
-        const ofxVecExpr<glm::vec4> &getNumNodes() const {
+        ofxVecExpr<glm::vec4> &getNumNodesExpr() {
             return pNumNodes;
         }
-        void setNumNodes(const glm::vec4 &value) {
-            pNumNodes.set(value);
-        }
-        void setNodeAnimation(Animation value) {
-            pNodeAnim.set((int)value);
-        }
-        const ofxVecExpr<glm::vec3> & getNodeSize() const {
+        ofxVecExpr<glm::vec3> & getNodeSizeExpr() {
             return pNodeSize;
         }
-        void setNodeSize(const glm::vec3 & value) {
-            pNodeSize.set(value);
-        }
-        const ofxVecExpr<glm::vec3> & getNodeSpacing() const {
+        ofxVecExpr<glm::vec3> & getNodeSpacingExpr() {
             return pNodeSpacing;
         }
-        void setNodeSpacing(const glm::vec3 &value) {
-            pNodeSpacing.set(value);
-        }
-        const ofxVecExpr<glm::vec3> & getNodeDisplacement() const {
+        ofxVecExpr<glm::vec3> & getNodeDisplacementExpr() {
             return pNodeDisplacement;
         }
-        void setNodeDisplacement(const glm::vec3 &value) {
-            pNodeDisplacement.set(value);
-        }
-        ofParameterGroup & getParameterGroup() {
-            if (pGroup.size() == 0) {
-                setupParameterGroup();
-            }
-            return pGroup;
-        }
-        std::shared_ptr<GuiGroup> & getGuiGroup() {
-            if (guiGroup.get() == NULL) {
-                guiGroup = std::shared_ptr<GuiGroup>(new GuiGroup(getParameterGroup()));
-            }
-            return guiGroup;
+        ofxVecExpr<glm::vec3> & getNodeRotationExpr() {
+            return pNodeRotation;
         }
         virtual void setupParameterGroup();
         
     protected:
-        ofxVecExpr<glm::vec3> pPos;
-        std::vector<std::shared_ptr<Node>> nodes;
+        std::vector<std::shared_ptr<Voxel>> voxels;
         std::vector<ofMatrix4x4> matrices;
         std::vector<ofFloatColor> colors;
         ofParameter<int> pReg = 0;
         ofParameter<int> pSide = 0;
         glm::vec3 dims;
         glm::vec3 origin;
-        std::shared_ptr<GuiGroup> guiGroup;
-        ofParameterGroup pGroup;
         ofxVecExpr<glm::vec4> pNumNodes;
-        ofParameter<int> pNodeAnim;
         ofxVecExpr<glm::vec3> pNodeSize;
         ofxVecExpr<glm::vec3> pNodeSpacing;
         ofxVecExpr<glm::vec3> pNodeDisplacement;
+        ofxVecExpr<glm::vec3> pNodeRotation;
+        std::vector<glm::vec3> voxelRotation;
         
     };
     

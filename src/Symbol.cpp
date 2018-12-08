@@ -1,13 +1,55 @@
-#include "Struct.hpp"
+#include "Symbol.hpp"
 #include "Strings.hpp"
 
 using namespace vxls;
 
-void Struct::resize() {
+ofEvent<std::string> Symbol::added;
+ofEvent<std::string> Symbol::removed;
+std::map<std::string, Symbol*> Symbol::symbols;
+
+Symbol* Symbol::find(const std::string &name) {
+    std::map<std::string,Symbol*>::iterator it = symbols.find(name);
+    return it != symbols.end() ? it->second : 0;
+}
+
+void Symbol::register_(const std::string &name) {
+    symbols[name] = this;
+    std::string value = name;
+    ofNotifyEvent(added, value);
+}
+
+void Symbol::unregister_(const std::string &name) {
+    std::string value = name;
+    ofNotifyEvent(removed, value);
+    symbols.erase(name);
+}
+
+Symbol::Symbol() {
+    lPos.setName("lPos");
+    lNumNodes.setName("lNumNodes");
+    lNodeSize.setName("lNodeSize");
+    lNodeSpacing.setName("lNodeSpacing");
+    lNodeDisplacement.setName("lNodeDisplacement");
+    lNodeRotation.setName("lNodeRotation");
+    ofxVecExpr<glm::vec3>* lNodeProps[4] = {&lNodeSize, &lNodeSpacing, &lNodeDisplacement, &lNodeRotation};
+    for (int i=0; i<4; i++) {
+        lNodeProps[i]->addVar("x", posX, false);
+        lNodeProps[i]->addVar("y", posY, false);
+        lNodeProps[i]->addVar("z", posZ, false);
+    }
+    ofxVecExpr<glm::vec3>* pNodeProps[4] = {&pNodeSize, &pNodeSpacing, &pNodeDisplacement, &pNodeRotation};
+    for (int i=0; i<4; i++) {
+        pNodeProps[i]->addVar("x", posX, false);
+        pNodeProps[i]->addVar("y", posY, false);
+        pNodeProps[i]->addVar("z", posZ, false);
+    }
+}
+
+void Symbol::resize() {
     lNumNodes = pNumNodes;
     numNodes = (glm::ivec4) lNumNodes.get();
-    const int count = countNodes();
-    Object::resizeNodes(count);
+    const int count = countVoxels();
+    VoxelGroup::resizeVoxels(count);
     if (children.size() == 0) {
         matrices.clear();
         matrices.resize(count);
@@ -16,17 +58,22 @@ void Struct::resize() {
     }
 }
 
-void Struct::transform() {
+void Symbol::transform() {
     lReg = pReg.get();
     lNodeSize = pNodeSize;
     lNodeSpacing = pNodeSpacing;
     lNodeDisplacement = pNodeDisplacement;
+    lNodeRotation = pNodeRotation;
     
+    const int count = countVoxels();
+    const bool explicitDisplacement = lNodeDisplacement.isExplicit();
+    voxelRotation.clear();
+    voxelRotation.resize(count);
     explicitNodeDisplacement.clear();
-    const int count = countNodes();
     explicitNodeDisplacement.resize(count);
-    if (lNodeDisplacement.isExplicit()) {
-        for (int i=0; i<count; i++) {
+    for (int i=0; i<count; i++) {
+        voxelRotation[i] = lNodeRotation.get();
+        if (explicitDisplacement) {
             explicitNodeDisplacement[i] = ofRandom(lNodeDisplacement.getExplicit());
         }
     }
@@ -35,16 +82,16 @@ void Struct::transform() {
     animate();
 }
 
-void Struct::animate() {
-    const int count = countNodes();
+void Symbol::animate() {
+    const int count = countVoxels();
     for (int i=0; i<count; i++) {
-        setCurrentNode(i);
-        updateCurrentNode();
+        setCurrentVoxel(i);
+        updateCurrentVoxel();
     }
 }
 
-void Struct::setCurrentNode(const int index)  {
-    currentNode = nodes[index];
+void Symbol::setCurrentVoxel(const int index)  {
+    currentVoxel = voxels[index];
     const glm::ivec3 &idx3 = unpack(index);
     const glm::vec3 posNorm = posNormal(idx3);
     curIdx = index;
@@ -53,12 +100,12 @@ void Struct::setCurrentNode(const int index)  {
     posZ = posNorm.z;
 }
 
-void Struct::updateCurrentNode() {
-    currentNode->setPosition(getNodePosition());
-    currentNode->setScale(getNodeScale());
+void Symbol::updateCurrentVoxel() {
+    currentVoxel->setPosition(getVoxelPosition());
+    currentVoxel->setScale(getVoxelScale());
 }
 
-const glm::vec3 Struct::getNodePosition() const {
+const glm::vec3 Symbol::getVoxelPosition() const {
     const glm::vec3 &nodeSpacing = lNodeSpacing.get();
     const glm::vec3 &nodeDisplacement = explicitNodeDisplacement[curIdx] + lNodeDisplacement.getNonExplicit();
     const glm::vec3 &nodeSize = lNodeSize.get();
@@ -68,12 +115,12 @@ const glm::vec3 Struct::getNodePosition() const {
     return origin + glm::vec3(nodeX, nodeY, nodeZ) + nodeDisplacement;
 }
 
-const glm::vec3 Struct::getNodeScale() const {
+const glm::vec3 Symbol::getVoxelScale() const {
     return lNodeSize.get();
 }
 
-void Struct::setupParameterGroup() {
-    Object::setupParameterGroup();
+void Symbol::setupParameterGroup() {
+    VoxelGroup::setupParameterGroup();
     pGroup.add(pColor.set(Strings::NODE_COLOR, ofColor::magenta));
     pGroup.add(pColorScheme.set(Strings::NODE_COLOR_SCHEME, 0, 0, (ofxColorTheory::ColorWheelSchemes::SCHEMES.size() - 1)));
     pGroup.add(pNumColors.set("NumNodeColors", 256, 1, 1000));
@@ -81,39 +128,24 @@ void Struct::setupParameterGroup() {
     pGroup.add(pNoiseAnim.set("NodeNoiseAnim", 0.1, 0, 0.5));
 }
 
-void Struct::setColors(const std::vector<ofColor> & colors) {
-    for (int i=0; i<nodes.size(); i++) {
+void Symbol::setColors(const std::vector<ofColor> & colors) {
+    for (int i=0; i<voxels.size(); i++) {
         float n = noise(posNormal(unpack(i)));
-        nodes[i]->setColor(colors[n * colors.size()]);
+        voxels[i]->setColor(colors[n * colors.size()]);
     }
 }
 
-void Struct::initRotation(glm::vec3 maxSpeed, float rotation) {
-    setRotation(maxSpeed, rotation);
-    for (auto& node : nodes) {
-        node->setRotation(maxSpeed, rotation);
-    }
-}
-
-void Struct::update(const glm::mat4 &mat) {
-    curTime = ofGetElapsedTimef();
+void Symbol::update(const glm::mat4 &mat) {
     updateFromParams();
     Container::update(mat);
 }
 
-void Struct::updateFromParams() {
+void Symbol::updateFromParams() {
     if (pGroup.size() > 0) {
-        if (lPos != pPos) {
-            lPos = pPos;
-            pos = lPos.get();
-        }
-        else if (lPos.hasExprSymbol("t")) {
-            pos = lPos.get();
-        }
+        BaseObject::updateFromParams();
         if (lNumNodes != pNumNodes) {
             resize();
             transform();
-            initRotation();
             updateColors();
         }
         else {
@@ -123,13 +155,38 @@ void Struct::updateFromParams() {
             else if (isTransformAnim()) {
                 animate();
             }
+            if (lNodeRotation.hasExprSymbol("t")) {
+                animateVoxels();
+            }
             updateColors();
         }
         //boxes.write(BOXES_RES, colors);
     }
 }
 
-void Struct::updateColors() {
+void Symbol::animateVoxels() {
+    const int count = countVoxels();
+    const std::shared_ptr<ofxExpr> &x = lNodeRotation[0];
+    const std::shared_ptr<ofxExpr> &y = lNodeRotation[1];
+    const std::shared_ptr<ofxExpr> &z = lNodeRotation[2];
+    const bool animX = x->hasExprSymbol("t");
+    const bool animY = y->hasExprSymbol("t");
+    const bool animZ = z->hasExprSymbol("t");
+    for (int i=0; i<count; i++) {
+        setCurrentVoxel(i);
+        if (animX) {
+            voxelRotation[i].x = x->get();
+        }
+        if (animY) {
+            voxelRotation[i].y = y->get();
+        }
+        if (animZ) {
+            voxelRotation[i].z = z->get();
+        }
+    }
+}
+
+void Symbol::updateColors() {
     float mult = pNoise.get();
     if (mult != noiseMult) {
         noiseAnimOffset = glm::vec3(mult - ofRandom(mult*2), mult - ofRandom(mult*2), mult - ofRandom(mult*2));
@@ -148,11 +205,11 @@ void Struct::updateColors() {
     setColors(colors);
 }
 
-void Struct::updateDims() {
+void Symbol::updateDims() {
     const glm::vec3 nodes = (glm::vec3(numNodes) * lNodeSize.get());
     const glm::vec3 spaces = (glm::vec3(numNodes) - glm::vec3(1.f)) * lNodeSpacing.get();
     dims = (nodes + spaces);
-    origin = (Object::REG[(int) pReg.get()] * dims);
+    origin = (VoxelGroup::REG[(int) pReg.get()] * dims);
     int l = (int) Registration::BACK;
     std::vector<float> distances;
     distances.push_back(0);
@@ -169,7 +226,7 @@ void Struct::updateDims() {
     }
 }
 
-void Struct::randomize() {
+void Symbol::randomize() {
     const glm::vec4 &min = pNumNodes.getMin();
     const glm::vec4 &max = pNumNodes.getMax();
     pNumNodes.set(glm::vec4(ofRandom(min.x, max.x), ofRandom(min.y, max.y), ofRandom(min.z, max.z), 1));
@@ -182,8 +239,8 @@ void Struct::randomize() {
     }
 }
 
-void Struct::randomizeColor() {
-    Node::randomizeColor();
+void Symbol::randomizeColor() {
+    HasColor::randomizeColor();
     pColorScheme.setRandom();
     //pNumColors.setRandom();
 }

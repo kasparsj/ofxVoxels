@@ -1,8 +1,7 @@
 #include "GuiGroup.hpp"
 #include "Strings.hpp"
 #include "ofxDropdown.h"
-#include "Animations.hpp"
-#include "Object.hpp"
+#include "VoxelGroup.hpp"
 #include "ColorWheelSchemes.h"
 
 using namespace vxls;
@@ -30,13 +29,9 @@ GuiGroup * GuiGroup::setup(const ofParameterGroup & _parameters, const std::stri
     
     for(std::size_t i = 0; i < _parameters.size(); i++){
         std::string name = _parameters.getName(i);
-        if (name == Strings::ANIMATION || name == Strings::NODE_ANIM) {
+        if (name == Strings::REGISTRATION || name == Strings::PARENT_SIDE) {
             auto p = _parameters.get<int>(i);
-            add(new ofxIntDropdown(p, Animations::LABELS, b.width));
-        }
-        else if (name == Strings::REGISTRATION || name == Strings::PARENT_SIDE) {
-            auto p = _parameters.get<int>(i);
-            add(new ofxIntDropdown(p, Object::REG_POINTS, b.width));
+            add(new ofxIntDropdown(p, VoxelGroup::REG_POINTS, b.width));
         }
         else if (name == Strings::NODE_COLOR_SCHEME) {
             auto p = _parameters.get<int>(i);

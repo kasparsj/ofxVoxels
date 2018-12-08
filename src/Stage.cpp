@@ -35,4 +35,6 @@ void Stage::update() {
     
     transformBuffer.updateData(0, getMatrices());
     colorsBuffer.updateData(0, getColors());
+    
+    camera.update(mat);
 }

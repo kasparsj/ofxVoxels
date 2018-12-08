@@ -1,10 +1,10 @@
 #pragma once
 
-#include "Struct.hpp"
+#include "Symbol.hpp"
 
 namespace vxls {
     
-    class Plane : public Struct {
+    class Plane : public Symbol {
         
     public:
         virtual std::string getName() {

@@ -1,7 +1,6 @@
 #pragma once
 
 #include "Stage.hpp"
-#include "Animations.hpp"
 #include "Plane.hpp"
 #include "Grid.hpp"
 #include "Tunnel.hpp"

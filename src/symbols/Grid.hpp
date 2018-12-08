@@ -1,13 +1,13 @@
 #pragma once
 
-#include "Struct.hpp"
+#include "Symbol.hpp"
 #include "ofColor.h"
 
 using namespace std;
 
 namespace vxls {
     
-    class Grid : public Struct {
+    class Grid : public Symbol {
         
     public:
         virtual string getName() {

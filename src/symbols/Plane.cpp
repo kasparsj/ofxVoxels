@@ -6,7 +6,7 @@ using namespace vxls;
 int Plane::numInstances = 0;
 
 void Plane::setupParameterGroup() {
-    Struct::setupParameterGroup();
+    Symbol::setupParameterGroup();
     pNumNodes.set("Nodes", glm::vec4(1), glm::vec4(1), glm::vec4(50, 50, 1, 1));
     pColor.set("NodeColor", ofColor::white);
     pNumColors.set("NumNodeColors", 1, 1, 1000);

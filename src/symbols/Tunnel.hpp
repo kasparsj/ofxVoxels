@@ -1,10 +1,10 @@
 #pragma once
 
-#include "Struct.hpp"
+#include "Symbol.hpp"
 
 namespace vxls {
     
-    class Tunnel : public Struct {
+    class Tunnel : public Symbol {
       
     public:
         virtual std::string getName() {
@@ -64,7 +64,7 @@ namespace vxls {
         }
         virtual void setupParameterGroup();
         virtual bool isTransformDirty() {
-            bool isDirty = Struct::isTransformDirty() || pCircular.get() != circular;
+            bool isDirty = Symbol::isTransformDirty() || pCircular.get() != circular;
             circular = pCircular.get();
             return isDirty;
         }
