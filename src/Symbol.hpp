@@ -65,13 +65,16 @@ namespace vxls {
                    pNodeRotation != lNodeRotation;
         }
         virtual bool isTransformAnim() {
-            return lNodeSize.hasExprSymbol("t") ||
-                   lNodeSpacing.hasExprSymbol("t") ||
-                   lNodeDisplacement.hasExprSymbol("t");
+            return lNodeSize.isTimeDependent() ||
+                   lNodeSpacing.isTimeDependent() ||
+                   lNodeDisplacement.isTimeDependent();
         }
         virtual void updateDims();
-        virtual const glm::mat4 getChildMatrix(const Container *child) const {
+        virtual const glm::mat4 getChildMatrix(const Container *child) const override {
             return sidesMatrix[(int)child->getSide()];
+        }
+        void setColorScheme(int value) {
+            pColorScheme.set(value);
         }
         void setNumColors(int value) {
             pNumColors.set(value);
@@ -79,8 +82,11 @@ namespace vxls {
         void setNoiseMult(float value) {
             pNoise.set(value);
         }
-        void setNoiseAnim(float value) {
-            pNoiseAnim.set(value);
+        void setNoiseOffset(const glm::vec3 &value) {
+            pNoiseOffset.set(value);
+        }
+        ofxVecExpr<glm::vec3> & getNoiseOffsetExpr() {
+            return pNoiseOffset;
         }
         void setCurrentVoxel(const int index);
         void updateCurrentVoxel();
@@ -104,13 +110,12 @@ namespace vxls {
         std::vector<glm::vec3> explicitNodeDisplacement;
         float noiseMult = 0;
         glm::vec3 noiseOffset;
-        glm::vec3 noiseAnimOffset;
         std::shared_ptr<ofxColorTheory::ColorWheelScheme> scheme;
         
-        ofParameter<float> pColorScheme;
+        ofParameter<int> pColorScheme;
         ofParameter<int> pNumColors;
         ofParameter<float> pNoise;
-        ofParameter<float> pNoiseAnim;
+        ofxVecExpr<glm::vec3> pNoiseOffset;
         
         float posX, posY, posZ, curIdx;
         

@@ -36,6 +36,8 @@ void VoxelGroup::update(const glm::mat4 &mat) {
 }
 
 void VoxelGroup::updateVoxel(const int i) {
-    const std::shared_ptr<Voxel> &voxel = voxels[i];
-    voxel->setRotation(voxelRotation[i]);
+    if (voxelRotation.size() > i) {
+        const std::shared_ptr<Voxel> &voxel = voxels[i];
+        voxel->setRotation(voxelRotation[i]);
+    }
 }

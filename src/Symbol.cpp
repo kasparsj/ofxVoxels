@@ -125,7 +125,7 @@ void Symbol::setupParameterGroup() {
     pGroup.add(pColorScheme.set(Strings::NODE_COLOR_SCHEME, 0, 0, (ofxColorTheory::ColorWheelSchemes::SCHEMES.size() - 1)));
     pGroup.add(pNumColors.set("NumNodeColors", 256, 1, 1000));
     pGroup.add(pNoise.set("NodeNoiseMult", 0.1, 0.001, 0.2));
-    pGroup.add(pNoiseAnim.set("NodeNoiseAnim", 0.1, 0, 0.5));
+    pGroup.add(pNoiseOffset.set("NodeNoiseOffset", glm::vec3(0.1)).setSliderMinMax(glm::vec3(0), glm::vec3(0.5)));
 }
 
 void Symbol::setColors(const std::vector<ofColor> & colors) {
@@ -155,7 +155,7 @@ void Symbol::updateFromParams() {
             else if (isTransformAnim()) {
                 animate();
             }
-            if (lNodeRotation.hasExprSymbol("t")) {
+            if (lNodeRotation.isTimeDependent()) {
                 animateVoxels();
             }
             updateColors();
@@ -169,9 +169,9 @@ void Symbol::animateVoxels() {
     const std::shared_ptr<ofxExpr> &x = lNodeRotation[0];
     const std::shared_ptr<ofxExpr> &y = lNodeRotation[1];
     const std::shared_ptr<ofxExpr> &z = lNodeRotation[2];
-    const bool animX = x->hasExprSymbol("t");
-    const bool animY = y->hasExprSymbol("t");
-    const bool animZ = z->hasExprSymbol("t");
+    const bool animX = x->isTimeDependent();
+    const bool animY = y->isTimeDependent();
+    const bool animZ = z->isTimeDependent();
     for (int i=0; i<count; i++) {
         setCurrentVoxel(i);
         if (animX) {
@@ -188,11 +188,8 @@ void Symbol::animateVoxels() {
 
 void Symbol::updateColors() {
     float mult = pNoise.get();
-    if (mult != noiseMult) {
-        noiseAnimOffset = glm::vec3(mult - ofRandom(mult*2), mult - ofRandom(mult*2), mult - ofRandom(mult*2));
-    }
     noiseMult = mult;
-    noiseOffset += noiseAnimOffset * pNoiseAnim.get();
+    noiseOffset = pNoiseOffset.get();
     std::vector<ofColor> colors;
     if (pNumColors.get() > 1) {
         scheme = ofxColorTheory::ColorWheelSchemes::SCHEMES[pColorScheme.get()];
@@ -231,7 +228,7 @@ void Symbol::randomize() {
     const glm::vec4 &max = pNumNodes.getMax();
     pNumNodes.set(glm::vec4(ofRandom(min.x, max.x), ofRandom(min.y, max.y), ofRandom(min.z, max.z), 1));
     pNoise.setRandom();
-    pNoiseAnim.setRandom();
+    pNoiseOffset.setRandom();
     pNodeSize.setRandom();
     pNodeSpacing.setRandom();
     if (pNodeDisplacement.isExplicit()) {

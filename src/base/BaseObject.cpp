@@ -12,14 +12,14 @@ void BaseObject::updateFromParams() {
         lPos = pPos;
         pos = lPos.get();
     }
-    else if (lPos.hasExprSymbol("t")) {
+    else if (lPos.isTimeDependent()) {
         pos = lPos.get();
     }
     if (lRotation != pRotation) {
         lRotation = pRotation;
         rotation = lRotation.get();
     }
-    else if (lRotation.hasExprSymbol("t")) {
+    else if (lRotation.isTimeDependent()) {
         rotation = lRotation.get();
     }
 }
